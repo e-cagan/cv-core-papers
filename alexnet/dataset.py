@@ -5,12 +5,14 @@ Module for datasets, augmentations and dataloaders.
 import torch
 import torchvision as tv
 import config
+from utils import PCA, WrapperDataset
 
 
 # Define transforms for train, val (train == val) and test
 train_transform = tv.transforms.Compose([
     tv.transforms.RandomCrop(size=config.INPUT_SIZE, padding=config.PADDING),
     tv.transforms.ToTensor(),
+    PCA(),
     tv.transforms.Normalize(mean=config.MEAN, std=config.STD),
 ])
 
@@ -19,17 +21,33 @@ test_transform = tv.transforms.Compose([
     tv.transforms.Normalize(mean=config.MEAN, std=config.STD),
 ])
 
-
 # Load the datasets (split the train dataset to train and validaton datasets)
-train_dataset = tv.datasets.CIFAR10(
+base_dataset = tv.datasets.CIFAR10(
     root=config.DATASET_PATH,
     train=True,
-    transform=train_transform,
+    transform=None,
     download=True
 )
 
-val_dataset = None
+# Generate random subsets for split
+train_subset, val_subset = torch.utils.data.random_split(
+    base_dataset,
+    lengths=config.SPLIT_LENGTHS,
+    generator=torch.Generator(device=config.DEVICE).manual_seed(config.SEED)
+)
 
+# Split dataset to train and validation datasets (45k train 5k validation on plain train images) using wrapper dataset class implemented in utils
+train_dataset = WrapperDataset(
+    dataset=train_subset,
+    transform=train_transform
+)
+
+val_dataset = WrapperDataset(
+    dataset=val_subset,
+    transform=test_transform
+)
+
+# Load test dataset
 test_dataset = tv.datasets.CIFAR10(
     root=config.DATASET_PATH,
     train=False,

@@ -7,6 +7,7 @@ import torch.nn as nn
 import torchvision as tv
 import numpy as np
 import config
+from PIL import Image
 
 
 # Local Rate Normalization
@@ -45,3 +46,31 @@ class LRN(nn.Module):
         s = squared_avg * self.local_size
         denom = (self.k + self.alpha * s).pow(self.beta)
         return x / denom
+    
+
+# Wrapper dataset class to avoid loading the dataset twice while splitting it
+class WrapperDataset(torch.utils.data.Dataset):
+    """
+    Wrapper dataset class which takes dataset and transforms (if any) to perform.
+    """
+
+    def __init__(self, dataset, transform=None):
+        super().__init__()
+        self.dataset = dataset
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, index):
+        # Take image and label on a particular index
+        img, label = self.dataset[index]
+
+        # Covert img to image if not already
+        img = Image(img)
+
+        # Check if there is any transform (apply if any)
+        if self.transforms:
+            img = self.transforms(img)
+
+        return img, label
