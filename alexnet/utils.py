@@ -7,7 +7,6 @@ import torch.nn as nn
 import torchvision as tv
 import numpy as np
 import config
-from PIL import Image
 
 
 # Local Rate Normalization
@@ -66,11 +65,23 @@ class WrapperDataset(torch.utils.data.Dataset):
         # Take image and label on a particular index
         img, label = self.dataset[index]
 
-        # Covert img to image if not already
-        img = Image(img)
-
         # Check if there is any transform (apply if any)
-        if self.transforms:
-            img = self.transforms(img)
+        if self.transform:
+            img = self.transform(img)
+        else:
+            pass
 
         return img, label
+
+
+# PCA Augmentation
+class PCA:
+    """
+    A class for PCA data augmentation to use on training transforms.
+    """
+
+    def __init__(self):
+        pass
+
+    def __call__(self, *args, **kwds):
+        pass
