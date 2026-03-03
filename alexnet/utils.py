@@ -1,0 +1,47 @@
+"""
+Module that contains utilities for AlexNet.
+"""
+
+import torch
+import torch.nn as nn
+import torchvision as tv
+import numpy as np
+import config
+
+
+# Local Rate Normalization
+class LRN(nn.Module):
+    """
+    Class for local rate normalization to normalize inputs within the AlexNet paper.
+    """
+
+    def __init__(self):
+        super().__init__()
+        
+        # Hyperparameters
+        self.local_size = config.LOCAL_SIZE
+        self.alpha = config.ALPHA
+        self.beta = config.BETA
+        self.k = config.K
+
+    def forward(self, x):
+        """
+        Forward propagation function for local rate normalization.
+        """
+
+        # Take the squares
+        squared = x ** 2
+
+        # padding along channel (e.g: if n=5 then 2 left, 2 right)
+        padding = (self.local_size - 1) // 2
+        squared_avg = torch.nn.functional.avg_pool3d(
+            squared.unsqueeze(1),  # [N, 1, C, H, W]
+            kernel_size=(self.local_size, 1, 1),
+            stride=1,
+            padding=(padding, 0, 0)
+        ).squeeze(1)
+
+        # normalization
+        s = squared_avg * self.local_size
+        denom = (self.k + self.alpha * s).pow(self.beta)
+        return x / denom

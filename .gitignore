@@ -1,0 +1,11 @@
+venv/
+.venv
+
+env/
+.env
+
+__pycache__/
+*.pyc
+
+cifar10_dataset/
+.cifar10_dataset
