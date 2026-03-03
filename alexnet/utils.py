@@ -83,10 +83,26 @@ class PCA:
     """
 
     def __init__(self, covariance_matrix=COVARIANCE_MATRIX, eigenvales=EIGENVALUES, eigenvectors=EIGENVECTORS):
-        self.covariance_matrix = covariance_matrix
-        self.eigenvales = eigenvales
-        self.eigenvectors = eigenvectors
+        # Convert numpy matrixes to pytorch tensors to avoid conflicts between pytorch and numpy
+        self.covariance_matrix = torch.tensor(covariance_matrix, dtype=torch.float32)
+        self.eigenvales = torch.tensor(eigenvales, dtype=torch.float32)
+        self.eigenvectors = torch.tensor(eigenvectors, dtype=torch.float32)
 
-    def __call__(self, *args, **kwds):
-        pass
+    def __call__(self, img: torch.Tensor):
+        # Create a random generated tensor for alpha values
+        alphas = torch.randn(3) * 0.1                           # mean = 0, standard deviation = 0.1
+
+        # Calculate noise strength
+        noises = alphas * torch.sqrt(self.eigenvales)           # Took square root to keep it at the same scale with standard deviation
+
+        # Calculate deflections based on color channels
+        deltas = torch.matmul(self.eigenvectors, noises)   # Delta vectors
+
+        # Reshape deltas to match with the shape of image
+        deltas = deltas.unsqueeze(1)
+        deltas = deltas.unsqueeze(1)
+
+        # Apply deltas to image
+        img += deltas
         
+        return img.clamp(min=0, max=1)                          # clamp the output between 0 and 1
