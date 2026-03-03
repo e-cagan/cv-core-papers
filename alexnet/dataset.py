@@ -67,3 +67,31 @@ flattened = train_imgs.reshape(-1, 3)                   # 3 channels, flatten (m
 # Calculate covariance matrix, eigenvalues and eigenvectors
 COVARIANCE_MATRIX = np.cov(flattened, rowvar=False)
 EIGENVALUES, EIGENVECTORS = np.linalg.eigh(COVARIANCE_MATRIX)
+
+# Load data using dataloaders for each split
+train_dataloader = torch.utils.data.DataLoader(
+    dataset=train_dataset,
+    batch_size=config.BATCH_SIZE,
+    shuffle=True,
+    num_workers=config.NUM_WORKERS,
+    pin_memory=True if config.DEVICE == 'cuda' else False,
+    drop_last=True      # Drops last batch if is less than intended batch size
+)
+
+val_dataloader = torch.utils.data.DataLoader(
+    dataset=val_dataset,
+    batch_size=config.BATCH_SIZE,
+    shuffle=False,
+    num_workers=config.NUM_WORKERS,
+    pin_memory=True if config.DEVICE == 'cuda' else False,
+    drop_last=False
+)
+
+test_dataloader = torch.utils.data.DataLoader(
+    dataset=test_dataset,
+    batch_size=config.BATCH_SIZE,
+    shuffle=False,
+    num_workers=config.NUM_WORKERS,
+    pin_memory=True if config.DEVICE == 'cuda' else False,
+    drop_last=False
+)

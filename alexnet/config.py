@@ -11,6 +11,7 @@ DATASET_PATH = "cifar10_dataset/"
 SPLIT_LENGTHS = [45000, 5000]       # 45k train - 5k validation images 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 SEED = 42
+NUM_WORKERS = 4
 
 # Training hyperparameters
 LEARNING_RATE = 0.001
