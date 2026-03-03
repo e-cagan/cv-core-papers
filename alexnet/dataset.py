@@ -11,6 +11,7 @@ from utils import PCA, WrapperDataset
 
 # Define transforms for train, val (train == val) and test
 train_transform = tv.transforms.Compose([
+    tv.transforms.Resize(size=(config.RESIZE_SIZE)),
     tv.transforms.RandomCrop(size=config.INPUT_SIZE, padding=config.PADDING),
     tv.transforms.ToTensor(),
     PCA(),
@@ -18,6 +19,8 @@ train_transform = tv.transforms.Compose([
 ])
 
 test_transform = tv.transforms.Compose([
+    tv.transforms.Resize(size=(config.RESIZE_SIZE)),
+    tv.transforms.CenterCrop(size=(config.INPUT_SIZE)),
     tv.transforms.ToTensor(),
     tv.transforms.Normalize(mean=config.MEAN, std=config.STD),
 ])

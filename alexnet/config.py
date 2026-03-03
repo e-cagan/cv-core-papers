@@ -23,8 +23,9 @@ DROPOUT = 0.5
 # Transform hyperparameters
 MEAN = (0.4914, 0.4822, 0.4465)
 STD = (0.2023, 0.1994, 0.2010)
-INPUT_SIZE = 32
-PADDING = 4
+RESIZE_SIZE = 256
+INPUT_SIZE = 224
+PADDING = 0
 
 # LRN hyperparameters
 LOCAL_SIZE = 5
