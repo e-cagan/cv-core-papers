@@ -4,6 +4,7 @@ Module for datasets, augmentations and dataloaders.
 
 import torch
 import torchvision as tv
+import numpy as np
 import config
 from utils import PCA, WrapperDataset
 
@@ -54,3 +55,15 @@ test_dataset = tv.datasets.CIFAR10(
     transform=test_transform,
     download=True
 )
+
+# Calculate covariance matrix, eigenvalues and eigenvectors to use it on PCA augmentation
+train_imgs = base_dataset.data[train_subset.indices]    # Only 45k training images
+train_imgs = train_imgs.astype(np.float32)
+train_imgs /= 255                                       # Normalize images
+
+# Reshape them flatten except channels
+flattened = train_imgs.reshape(-1, 3)                   # 3 channels, flatten (multiply) rest of them automatically except channels
+
+# Calculate covariance matrix, eigenvalues and eigenvectors
+COVARIANCE_MATRIX = np.cov(flattened, rowvar=False)
+EIGENVALUES, EIGENVECTORS = np.linalg.eigh(COVARIANCE_MATRIX)

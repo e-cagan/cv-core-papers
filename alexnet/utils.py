@@ -8,6 +8,8 @@ import torchvision as tv
 import numpy as np
 import config
 
+from dataset import COVARIANCE_MATRIX, EIGENVALUES, EIGENVECTORS
+
 
 # Local Rate Normalization
 class LRN(nn.Module):
@@ -80,8 +82,11 @@ class PCA:
     A class for PCA data augmentation to use on training transforms.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, covariance_matrix=COVARIANCE_MATRIX, eigenvales=EIGENVALUES, eigenvectors=EIGENVECTORS):
+        self.covariance_matrix = covariance_matrix
+        self.eigenvales = eigenvales
+        self.eigenvectors = eigenvectors
 
     def __call__(self, *args, **kwds):
         pass
+        
