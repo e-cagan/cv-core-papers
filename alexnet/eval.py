@@ -49,6 +49,6 @@ def evaluate(model: nn.Module, dataloader: DataLoader, loss: nn.CrossEntropyLoss
     avg_val_loss = running_val_loss / len(dataloader) # BATCH SIZE
 
     # Calculate validation accuracy
-    val_acc = true / total
+    val_acc = (true / total) * 100
 
     return avg_val_loss, val_acc
