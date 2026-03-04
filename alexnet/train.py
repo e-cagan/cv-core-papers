@@ -27,6 +27,17 @@ optimizer = torch.optim.SGD(
     weight_decay=config.WEIGHT_DECAY
 )
 
+# Learning rate scheduler
+lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    optimizer=optimizer,
+    mode='min',         # 'min' for loss, 'max' for accuracy
+    factor=config.LR_FACTOR,
+    patience=5,
+    min_lr=1e-6,
+    threshold=0.001,
+    cooldown=0
+)
+
 
 # Define a function for training the model
 def train(model=model, dataloader=train_dataloader, loss=loss):
@@ -89,10 +100,9 @@ def train(model=model, dataloader=train_dataloader, loss=loss):
         print(f"Validation accuracy: {val_acc}")
         print("="*60)
 
-    # Save the model
-    torch.save(obj=model.state_dict(), f=config.MODEL_PATH)
-    print(f"Trained model saved to {config.MODEL_PATH}")
-
+        # Schedule the learning rate
+        lr_scheduler.step(average_val_loss)
+        
     return
 
 

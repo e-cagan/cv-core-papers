@@ -106,3 +106,41 @@ class PCA:
         img += deltas
         
         return img.clamp(min=0, max=1)                          # clamp the output between 0 and 1
+    
+
+# Functions for saving and loading model checkpoints
+def save_checkpoint(model: nn.Module, optimizer: torch.optim.Optimizer, scheduler: torch.optim.lr_scheduler.LRScheduler, epoch, 
+                    path=config.MODEL_PATH):
+    """
+    Function for saving model checkpoint.
+    """
+
+    # Create the state dict
+    state_dict = {
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'scheduler_state_dict': scheduler.state_dict(),
+    }
+
+    # Save the checkpoint
+    torch.save(obj=state_dict, f=path)
+    print(f"Checkpoint saved to {path} successfully!")
+    return
+
+
+def load_checkpoint(model: nn.Module, optimizer: torch.optim.Optimizer, scheduler: torch.optim.lr_scheduler.LRScheduler, path=config.MODEL_PATH):
+    """
+    Function for loading model checkpoint.
+    """
+
+    # Load the checkpoint from file
+    checkpoint = torch.load(f=path, map_location=config.DEVICE)
+
+    # Fill out the parameters using loaded checkpoint
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+
+    # Return the epoch
+    return checkpoint['epoch']
