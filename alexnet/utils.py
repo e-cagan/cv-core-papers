@@ -96,7 +96,7 @@ class PCA:
         noises = alphas * torch.sqrt(self.eigenvales)           # Took square root to keep it at the same scale with standard deviation
 
         # Calculate deflections based on color channels
-        deltas = torch.matmul(self.eigenvectors, noises)   # Delta vectors
+        deltas = torch.matmul(self.eigenvectors, noises)        # Delta vectors
 
         # Reshape deltas to match with the shape of image
         deltas = deltas.unsqueeze(1)

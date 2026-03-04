@@ -19,6 +19,7 @@ MOMENTUM = 0.9
 WEIGHT_DECAY = 0.0005
 BATCH_SIZE = 128
 DROPOUT = 0.5
+EPOCHS = 90
 
 # Transform hyperparameters
 MEAN = (0.4914, 0.4822, 0.4465)
