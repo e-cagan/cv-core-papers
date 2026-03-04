@@ -18,7 +18,7 @@ class AlexNet(nn.Module):
         super().__init__()
         self.network = nn.Sequential(
             # First convolutional layer
-            nn.Conv2d(in_channels=3, out_channels=96, kernel_size=11, stride=4, padding=0),     # Input size 224 ==> 55
+            nn.Conv2d(in_channels=3, out_channels=96, kernel_size=11, stride=4, padding=0),     # Input size 227 ==> 55
             nn.ReLU(),
             LRN(),
             nn.MaxPool2d(kernel_size=3, stride=2),                                              # Input size 55 ==> 27
