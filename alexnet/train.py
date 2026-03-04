@@ -4,11 +4,11 @@ Module for training the model.
 
 import torch
 import torch.nn as nn
-import torchvision as tv
-import numpy as np
+import os
 
 import config
-from dataset import train_dataloader, val_dataloader, test_dataloader
+from dataset import train_dataloader, val_dataloader
+from utils import save_checkpoint, load_checkpoint
 from eval import evaluate
 from model import AlexNet
 
@@ -45,11 +45,18 @@ def train(model=model, dataloader=train_dataloader, loss=loss):
     Train function for model which works with model, dataloader, loss function and device configuration.
     """
 
+    # Variable to keep start epoch
+    start_epoch = 0
+
     # Setup the model mode as training mode
     model.train(mode=True)
 
+    # Check if model path exists beforehand
+    if os.path.exists(config.MODEL_PATH):
+        start_epoch = load_checkpoint(model=model, optimizer=optimizer, scheduler=lr_scheduler, path=config.MODEL_PATH)
+
     # Iterate trough batches in range of epochs
-    for epoch in range(EPOCHS):
+    for epoch in range(start_epoch, EPOCHS):
         
         # Running loss and variables to calculate accuracy
         running_train_loss = 0.0
@@ -102,7 +109,10 @@ def train(model=model, dataloader=train_dataloader, loss=loss):
 
         # Schedule the learning rate
         lr_scheduler.step(average_val_loss)
-        
+
+        # Save the checkpoint
+        save_checkpoint(model=model, optimizer=optimizer, scheduler=lr_scheduler, epoch=epoch, path=config.MODEL_PATH)
+
     return
 
 
