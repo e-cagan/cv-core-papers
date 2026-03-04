@@ -4,11 +4,8 @@ Module that contains utilities for AlexNet.
 
 import torch
 import torch.nn as nn
-import torchvision as tv
 import numpy as np
 import config
-
-from dataset import COVARIANCE_MATRIX, EIGENVALUES, EIGENVECTORS
 
 
 # Local Rate Normalization

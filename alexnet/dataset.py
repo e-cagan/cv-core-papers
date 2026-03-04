@@ -29,7 +29,7 @@ base_dataset = tv.datasets.CIFAR10(
 train_subset, val_subset = torch.utils.data.random_split(
     base_dataset,
     lengths=config.SPLIT_LENGTHS,
-    generator=torch.Generator(device=config.DEVICE).manual_seed(config.SEED)
+    generator=torch.Generator(device='cpu').manual_seed(config.SEED) # Always cpu for generator
 )
 
 # Split dataset to train and validation datasets (45k train 5k validation on plain train images) using wrapper dataset class implemented in utils
