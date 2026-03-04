@@ -52,6 +52,7 @@ convariance_matrix, eigenvalues, eigenvectors = compute_pca(dataset=base_dataset
 train_transform = tv.transforms.Compose([
     tv.transforms.Resize(size=(config.RESIZE_SIZE)),
     tv.transforms.RandomCrop(size=config.INPUT_SIZE, padding=config.PADDING),
+    tv.transforms.RandomHorizontalFlip(p=0.5),
     tv.transforms.ToTensor(),
     PCA(covariance_matrix=convariance_matrix, eigenvales=eigenvalues, eigenvectors=eigenvectors),
     tv.transforms.Normalize(mean=config.MEAN, std=config.STD),
