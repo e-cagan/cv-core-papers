@@ -21,7 +21,7 @@ if __name__ == '__main__':
     model.load_state_dict(checkpoint['model_state_dict'])
     
     # Evaluate the model
-    avg_test_loss, test_acc = evaluate(model=model, dataloader=test_dataloader)
+    avg_test_loss, test_acc = evaluate(model=model, dataloader=test_dataloader, loss=torch.nn.CrossEntropyLoss(), device=config.DEVICE)
 
     # Print out the results
     print("="*60)
