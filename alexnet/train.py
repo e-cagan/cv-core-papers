@@ -15,7 +15,8 @@ from model import AlexNet
 
 # Define important variables to use in training
 EPOCHS = config.EPOCHS
-model = AlexNet().to(device=config.DEVICE)
+device = config.DEVICE
+model = AlexNet().to(device=device)
 loss = nn.CrossEntropyLoss()
 
 # SGD + momentum optimizer
@@ -33,10 +34,72 @@ def train(model=model, dataloader=train_dataloader, loss=loss):
     Train function for model which works with model, dataloader, loss function and device configuration.
     """
 
-    
+    # Setup the model mode as training mode
+    model.train(mode=True)
+
+    # Iterate trough batches in range of epochs
+    for epoch in range(EPOCHS):
+        
+        # Running loss and variables to calculate accuracy
+        running_train_loss = 0.0
+        true, total = 0, 0
+        
+        for i, data in enumerate(dataloader):
+            # Take images and labels
+            imgs, labels = data
+
+            # Convert them to device
+            imgs, labels = imgs.to(device), labels.to(device)
+
+            # Zero the gradients for every batch
+            optimizer.zero_grad()
+
+            # Forward propagation to predict
+            outputs = model(imgs)
+            predictions = torch.argmax(outputs, dim=1)
+
+            # Calculate the loss and backward propagation
+            train_loss = loss(outputs, labels)
+            train_loss.backward()
+            running_train_loss += train_loss.item()
+
+            # Adjust learning weights
+            optimizer.step()
+
+            # Take total and true to calculate train accuracy afterwards
+            total += labels.size(0)
+            true += (predictions == labels).sum().item()
+
+        # Take average validation loss and validation accuracy from evaluate function
+        average_val_loss, val_acc = evaluate(model=model, dataloader=val_dataloader, loss=loss, device=device)
+
+        # Calculate average training loss and training accuracy
+        average_train_loss = running_train_loss / len(dataloader) # BATCH SIZE
+        train_acc = (true / total) * 100
+
+        # Return model back to train mode since evaluate function adjusts the model mode as eval
+        model.train(mode=True)
+
+        # Log the info to display metrics
+        print("="*60)
+        print(f"Epoch: {epoch + 1}")
+        print(f"Average train loss: {average_train_loss}")
+        print(f"Train accuracy: {train_acc}")
+        print(f"Average validation loss: {average_val_loss}")
+        print(f"Validation accuracy: {val_acc}")
+        print("="*60)
+
+    # Save the model
+    torch.save(obj=model.state_dict(), f=config.MODEL_PATH)
+    print(f"Trained model saved to {config.MODEL_PATH}")
+
+    return
 
 
 # Test the training function
 if __name__ == '__main__':
-    # TODO start implementing train after implementing evaluation.
-    pass
+    train(
+        model=model,
+        dataloader=train_dataloader,
+        loss=loss
+    )

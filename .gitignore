@@ -9,3 +9,5 @@ __pycache__/
 
 cifar10_dataset/
 .cifar10_dataset
+
+*.pt

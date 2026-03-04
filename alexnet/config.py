@@ -8,6 +8,7 @@ import torch
 
 # Additional constants
 DATASET_PATH = "cifar10_dataset/"
+MODEL_PATH = "models/alexnet_model.pt"
 SPLIT_LENGTHS = [45000, 5000]       # 45k train - 5k validation images 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 SEED = 42
