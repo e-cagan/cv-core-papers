@@ -76,13 +76,34 @@ class WrapperDataset(torch.utils.data.Dataset):
         return img, label
 
 
+# Define a function to compute PCA to avoid import errors
+def compute_pca(dataset, indicies):
+    """
+    Function to compute PCA.
+    """
+
+    # Calculate covariance matrix, eigenvalues and eigenvectors to use it on PCA augmentation
+    imgs = dataset.data[indicies]       # Only 45k training images
+    imgs = imgs.astype(np.float32)
+    imgs /= 255                         # Normalize images
+
+    # Reshape them flatten except channels
+    flattened = imgs.reshape(-1, 3)     # 3 channels, flatten (multiply) rest of them automatically except channels
+
+    # Calculate covariance matrix, eigenvalues and eigenvectors
+    convariance_matrix = np.cov(flattened, rowvar=False)
+    eigenvalues, eigenvectors = np.linalg.eigh(convariance_matrix)
+
+    return convariance_matrix, eigenvalues, eigenvectors
+
+
 # PCA Augmentation
 class PCA:
     """
     A class for PCA data augmentation to use on training transforms.
     """
 
-    def __init__(self, covariance_matrix=COVARIANCE_MATRIX, eigenvales=EIGENVALUES, eigenvectors=EIGENVECTORS):
+    def __init__(self, covariance_matrix, eigenvales, eigenvectors):
         # Convert numpy matrixes to pytorch tensors to avoid conflicts between pytorch and numpy
         self.covariance_matrix = torch.tensor(covariance_matrix, dtype=torch.float32)
         self.eigenvales = torch.tensor(eigenvales, dtype=torch.float32)
