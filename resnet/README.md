@@ -54,7 +54,7 @@ Projection shortcut (1×1 Conv + BN) applied when stride ≠ 1 or channels chang
 - 4 stages with channel progression: 64 → 128 → 256 → 512
 - BatchNorm after every Conv
 - AdaptiveAvgPool instead of fixed-size pooling
-- SGD with momentum=0.9, weight_decay=0.0005
+- SGD with momentum=0.9, weight_decay=0.0001
 - LR decay factor=0.1 on plateau
 - Random crop (padding=4) + Random horizontal flip
 
