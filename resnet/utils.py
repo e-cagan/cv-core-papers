@@ -1,5 +1,5 @@
 """
-Module that contains utilities for VggNet-11 model.
+Module that contains utilities for ResNet18 model.
 """
 
 import torch
