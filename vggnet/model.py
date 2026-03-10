@@ -1,5 +1,5 @@
 """
-Module for defining the architecture of VggNet-16 model.
+Module for defining the architecture of VggNet-11 model.
 """
 
 import torch
