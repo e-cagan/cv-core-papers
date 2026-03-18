@@ -89,7 +89,7 @@ class TransitionLayer(nn.Module):
 
 class DenseNet121(nn.Module):
     """
-    Reproduced DenseNet121 model architecture based on VggNet paper.
+    Reproduced DenseNet121 model architecture based on Densenet paper.
     """
 
     def __init__(self):
@@ -97,6 +97,34 @@ class DenseNet121(nn.Module):
         
         # Define the network
         
+        # Input layer
+        self.conv_1 = nn.Conv2d(in_channels=3, out_channels=24, kernel_size=3, stride=1, padding=1)     # out_channels=64 and kernel_size=7 for Imagenet
+        self.bn_1 = nn.BatchNorm2d(num_features=24)
+        self.relu_1 = nn.ReLU()
+        # Additional MaxPool for Imagenet
+
+        # DenseBlock(s) + TransitionLayer(s)
+        # Block 1
+        self.db_1 = DenseBlock(num_layers=6, in_channels=24)
+        self.trns_1 = TransitionLayer(in_channels=96, out_channels=int(96 * config.THETA))      # -> 48
+
+        # Block 2
+        self.db_2 = DenseBlock(num_layers=12, in_channels=48)
+        self.trns_2 = TransitionLayer(in_channels=192, out_channels=int(192 * config.THETA))    # -> 96
+
+        # Block 3
+        self.db_3 = DenseBlock(num_layers=24, in_channels=96)
+        self.trns_3 = TransitionLayer(in_channels=384, out_channels=int(384 * config.THETA))    # -> 192
+
+        # Block 4
+        self.db_4 = DenseBlock(num_layers=16, in_channels=192)                                  # -> 384
+
+        # Output layer
+        self.bn_final = nn.BatchNorm2d(num_features=384)
+        self.relu_final = nn.ReLU()
+        self.avgpool = nn.AdaptiveAvgPool2d(output_size=(1, 1))
+        self.flatten = nn.Flatten()
+        self.fc = nn.Linear(in_features=384, out_features=10)
 
 
     def forward(self, x):
@@ -104,4 +132,29 @@ class DenseNet121(nn.Module):
         Forward propagation.
         """
 
-        return self.network(x)
+        # Network
+        # STEM
+        x = self.conv_1(x)
+        x = self.bn_1(x)
+        x = self.relu_1(x)
+
+        # DenseLayers + TransitionLayers
+        x = self.db_1(x)
+        x = self.trns_1(x)
+
+        x = self.db_2(x)
+        x = self.trns_2(x)
+
+        x = self.db_3(x)
+        x = self.trns_3(x)
+
+        x = self.db_4(x)
+        
+        # Output layer
+        x = self.bn_final(x)
+        x = self.relu_final(x)
+        x = self.avgpool(x)
+        x = self.flatten(x)
+        x = self.fc(x)
+
+        return x

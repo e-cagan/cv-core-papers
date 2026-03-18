@@ -63,7 +63,7 @@ class BasicBlock(nn.Module):
 
 class ResNet18(nn.Module):
     """
-    Reproduced ResNet18 model architecture based on VggNet paper.
+    Reproduced ResNet18 model architecture based on Resnet paper.
     """
 
     def __init__(self):
